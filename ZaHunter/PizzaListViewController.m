@@ -25,9 +25,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    //allocates the CLLocation Manager
     self.locationManager = [[CLLocationManager alloc]init];
+    //sets the delegate of the location manager to the PizzaListViewController
     self.locationManager.delegate = self;
+    //calls the method that will always ask user for authorization to use their location
     [self.locationManager requestAlwaysAuthorization];
+    //calls the method to begin using location
     [self.locationManager startUpdatingLocation];
     self.textView.text = @"Finding pizza joints...";
 
@@ -39,7 +43,7 @@
     NSLog(@"%@", error);
 }
 //retrieves the directions
-- (IBAction)startGettingPizza:(UIButton *)sender {
+- (IBAction)getDirections:(UIButton *)sender {
 
 }
 
@@ -48,8 +52,11 @@
     for (CLLocation *location in locations) {
         if (location.horizontalAccuracy < 100 && location.verticalAccuracy < 100) {
             self.textView.text = @"";
+            //stops updating location once within range of accuracy
             [self.locationManager stopUpdatingLocation];
+            //calls the findPizzaNear method on this particular instance of location
             [self findPizzaNear:location];
+            //breaks the for loop
             break;
         }
     }
@@ -82,11 +89,15 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CellID" forIndexPath:indexPath];
 
     //alloc our custom class and initialize it with a mapItem
+    //the issue that I'm having lies in line 93
     PizzaSpot *pizzaSpot = [[PizzaSpot alloc]initWithMapItem:self.mapItem];
     pizzaSpot = [self.pizzaPlaces objectAtIndex:indexPath.row];
     cell.textLabel.text = pizzaSpot.name;
-
-   CLLocationDistance distance = [pizzaSpot.mapItem.placemark.location distanceFromLocation:self.locationManager.location];
+    
+    NSLog(@"%@", self.mapItem.placemark.location);
+    NSLog(@"%@", self.locationManager.location);
+//    CLLocationDistance distance = [self.locationManager.location distanceFromLocation:self.mapItem.placemark.location];
+    CLLocationDistance distance = [self.locationManager.location distanceFromLocation:pizzaSpot.location];
 
     //convert the double (meters) to a string
     NSNumber *myDoubleNumber = [NSNumber numberWithDouble:distance];

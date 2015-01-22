@@ -47,7 +47,7 @@
                                             </mask>
                                         </variation>
                                         <connections>
-                                            <action selector="startGettingPizza:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="esf-EA-iaD"/>
+                                            <action selector="getDirections:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="DUp-dk-1eb"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -171,7 +171,22 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" title="Pizza Hunter" id="kdX-OY-ijJ"/>
+                    <navigationItem key="navigationItem" title="Pizza Hunter" id="kdX-OY-ijJ">
+                        <barButtonItem key="leftBarButtonItem" style="plain" id="5ym-Vp-YFO">
+                            <segmentedControl key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="9x8-mw-DaO">
+                                <rect key="frame" x="-61" y="-14" width="123" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <segments>
+                                    <segment title=""/>
+                                    <segment title=""/>
+                                </segments>
+                                <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            </segmentedControl>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="action" id="YlV-2h-bq7">
+                            <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="k2P-pq-GA7" id="jGu-yW-xv7"/>
                         <outlet property="textView" destination="JmM-I6-Cge" id="8OR-de-RuV"/>
