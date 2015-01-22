@@ -8,6 +8,12 @@
 
 #import <MapKit/MapKit.h>
 
-@interface PizzaSpot : MKMapItem
+@interface PizzaSpot : NSObject
+@property NSString *name;
+@property double distance;
+@property MKMapItem *mapItem;
+@property CLLocation *location;
+
+-(instancetype)initWithMapItem:(MKMapItem *)mapItem;
 
 @end

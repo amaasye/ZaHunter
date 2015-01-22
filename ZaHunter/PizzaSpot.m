@@ -10,4 +10,12 @@
 
 @implementation PizzaSpot
 
+
+-(instancetype)initWithMapItem:(MKMapItem *)mapItem {
+        self = [super init];
+        self.mapItem = mapItem;
+        return self;
+}
+
+
 @end

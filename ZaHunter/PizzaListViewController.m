@@ -15,8 +15,8 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 @property NSArray *pizzaPlaces;
-@property PizzaSpot *pizzaSpot;
 @property CLLocationManager *locationManager;
+@property MKMapItem *mapItem;
 
 
 @end
@@ -28,6 +28,8 @@
     self.locationManager = [[CLLocationManager alloc]init];
     self.locationManager.delegate = self;
     [self.locationManager requestAlwaysAuthorization];
+    [self.locationManager startUpdatingLocation];
+    self.textView.text = @"Finding pizza joints...";
 
 }
 
@@ -36,16 +38,15 @@
 -(void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"%@", error);
 }
-//retrieves the most recent location
+//retrieves the directions
 - (IBAction)startGettingPizza:(UIButton *)sender {
-    [self.locationManager startUpdatingLocation];
-    self.textView.text = @"Finding pizza joints...";
 
 }
+
 //what happens after the location is updated:
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
     for (CLLocation *location in locations) {
-        if (location.horizontalAccuracy < 1000 && location.verticalAccuracy < 1000) {
+        if (location.horizontalAccuracy < 100 && location.verticalAccuracy < 100) {
             self.textView.text = @"";
             [self.locationManager stopUpdatingLocation];
             [self findPizzaNear:location];
@@ -58,7 +59,8 @@
 -(void)findPizzaNear:(CLLocation *)location {
     MKLocalSearchRequest *request = [[MKLocalSearchRequest alloc]init];
     request.naturalLanguageQuery = @"Pizza";
-    request.region = MKCoordinateRegionMake(location.coordinate, MKCoordinateSpanMake(1, 1));
+    //sets the search region as 20 square kilometers
+    request.region = MKCoordinateRegionMakeWithDistance(location.coordinate, 20000, 20000);
 
     MKLocalSearch *search = [[MKLocalSearch alloc]initWithRequest:request];
     [search startWithCompletionHandler:^(MKLocalSearchResponse *response, NSError *error) {
@@ -70,7 +72,7 @@
 
 #pragma mark - Table View
 
-//sets the number of rows in the table view
+//sets the number of rows in the table view to be the number of pizza places that are generated thru the search
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.pizzaPlaces.count;
 }
@@ -78,10 +80,21 @@
 //populates the table view with the relevent data
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CellID" forIndexPath:indexPath];
-    //sets an instance of the custom object for each item in the array of pizza places
-    self.pizzaSpot = [self.pizzaPlaces objectAtIndex:indexPath.row];
-    cell.textLabel.text = self.pizzaSpot.name;
-    cell.detailTextLabel.text = self.pizzaSpot.placemark.title;
+
+    //alloc our custom class and initialize it with a mapItem
+    PizzaSpot *pizzaSpot = [[PizzaSpot alloc]initWithMapItem:self.mapItem];
+    pizzaSpot = [self.pizzaPlaces objectAtIndex:indexPath.row];
+    cell.textLabel.text = pizzaSpot.name;
+
+   CLLocationDistance distance = [pizzaSpot.mapItem.placemark.location distanceFromLocation:self.locationManager.location];
+
+    //convert the double (meters) to a string
+    NSNumber *myDoubleNumber = [NSNumber numberWithDouble:distance];
+    NSString *distanceString = [myDoubleNumber stringValue];
+
+    //assign the detail label text of our cell to that string
+    cell.detailTextLabel.text = distanceString;
+    
     return cell;
 }
 
